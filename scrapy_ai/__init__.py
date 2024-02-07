@@ -1,1 +1,1 @@
-from .spider import AISpider
+from .list_spider import ListSpider

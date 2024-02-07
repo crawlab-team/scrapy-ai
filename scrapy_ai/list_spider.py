@@ -1,19 +1,18 @@
-from typing import Any, List
+from typing import Any
 
 import requests
-
-import scrapy
 from scrapy.http import Response
 
+from scrapy_ai.base_spider import BaseSpider
 
-class AISpider(scrapy.Spider):
-    _api_endpoint: str = 'https://crawlab-ai.azurewebsites.net'
+
+class ListSpider(BaseSpider):
     _fields: dict = None
     _list_element_css_selector: str = None
     _next_page_element_css_selector: str = None
 
     def __init__(self):
-        super(AISpider, self).__init__()
+        super(ListSpider, self).__init__()
         self._fetch_rules()
 
     def _fetch_rules(self):
@@ -40,6 +39,7 @@ class AISpider(scrapy.Spider):
             yield data
 
         if self._next_page_element_css_selector:
-            next_page_href = response.css(self._next_page_element_css_selector + '::attr(href)').get()
+            next_page_element = response.css(self._next_page_element_css_selector)
+            next_page_href = next_page_element.css('a::attr(href)').get()
             if next_page_href:
                 yield response.follow(next_page_href, self.parse)
